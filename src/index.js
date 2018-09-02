@@ -1,8 +1,10 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import registerServiceWorker from './registerServiceWorker';
+import { types } from "mobx-state-tree";
 
-ReactDOM.render(<App />, document.getElementById('root'));
-registerServiceWorker();
+const Todo = types.model({
+  name: "", // default values
+  done: false
+});
+
+const User = types.model({
+  name: ""
+});
