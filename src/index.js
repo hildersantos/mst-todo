@@ -1,4 +1,11 @@
-import { types, getSnapshot } from "mobx-state-tree";
+import React from "react";
+import { render } from "react-dom";
+import { types } from "mobx-state-tree";
+import { observer } from "mobx-react";
+import { values } from "mobx";
+
+let id = 1;
+const randomId = () => ++id;
 
 // Criando os modelos
 const Todo = types
@@ -34,20 +41,36 @@ const RootStore = types
   });
 
 const store = RootStore.create({
-  users: {} // Users não está marcado como opcional. Interessante!
+  users: {}, // Users não está marcado como opcional. Interessante!
+  todos: {
+    "1": {
+      id: id,
+      name: "Eat a cake",
+      done: true
+    }
+  }
 });
 
-// Crio as instâncias com os valores padrão.
-const john = User.create();
-const eat = Todo.create();
+const App = observer(props => (
+  <div>
+    <button onClick={e => props.store.addTodo(randomId(), "New Task")}>
+      Add Task
+    </button>
+    {values(props.store.todos).map(todo => (
+      <div key={todo.id}>
+        <input
+          type="checkbox"
+          checked={todo.done}
+          onChange={e => todo.toggle()}
+        />
+        <input
+          type="text"
+          value={todo.name}
+          onChange={e => todo.setName(e.currentTarget.value)}
+        />
+      </div>
+    ))}
+  </div>
+));
 
-// Sobrescrevendo os valores padrão
-const sleep = Todo.create({ name: "Sleep" });
-
-store.addTodo(1, "Eat a cake"); // Crio um Todo, usando o map
-store.todos.get(1).toggle(); // Toggle TODO da store
-
-console.log("John:", john.toJSON());
-console.log("Eat TODO:", eat.toJSON());
-console.log("Sleep TODO:", sleep.toJSON());
-console.log(getSnapshot(store));
+render(<App store={store} />, document.getElementById("root"));
