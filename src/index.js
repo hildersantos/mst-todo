@@ -75,8 +75,8 @@ const AppView = observer(props => {
       <button onClick={e => props.store.addTodo(randomId(), "New Task")}>
         Add Task
       </button>
-      {values(props.store.todos).map((todo, i) => (
-        <TodoView key={i} todo={todo} />
+      {values(props.store.todos).map(todo => (
+        <TodoView key={todo.id} todo={todo} />
       ))}
     </div>
   );
