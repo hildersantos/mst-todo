@@ -39,6 +39,9 @@ const RootStore = types
     },
     get completedCount() {
       return values(self.todos).filter(todo => todo.done).length;
+    },
+    getTodosWhereDoneIs(done) {
+      return values(self.todos).filter(todo => todo.done === done);
     }
   }))
   .actions(self => {
@@ -93,6 +96,10 @@ const AppView = observer(props => {
         <TodoView key={todo.id} todo={todo} />
       ))}
       <TodoViewCounter store={props.store} />
+      <h4>Completadas</h4>
+      {props.store.getTodosWhereDoneIs(true).map(todo => (
+        <TodoView key={todo.id} todo={todo} />
+      ))}
     </div>
   );
 });
