@@ -10,6 +10,15 @@ const User = types.model({
   name: types.optional(types.string, "")
 });
 
+const RootStore = types.model({
+  users: types.map(User),
+  todos: types.optional(types.map(Todo), {})
+});
+
+const store = RootStore.create({
+  users: {} // Users não está marcado como opcional. Interessante!
+});
+
 // Crio as instâncias com os valores padrão.
 const john = User.create();
 const eat = Todo.create();
