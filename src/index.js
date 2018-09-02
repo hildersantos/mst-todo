@@ -10,6 +10,7 @@ const randomId = () => ++id;
 // Criando os modelos
 const Todo = types
   .model({
+    id: types.identifierNumber,
     name: types.optional(types.string, ""), // default values
     done: types.optional(types.boolean, false)
   })
@@ -34,7 +35,7 @@ const RootStore = types
   })
   .actions(self => {
     function addTodo(id, name) {
-      self.todos.set(id, Todo.create({ name }));
+      self.todos.set(id, Todo.create({ name, id }));
     }
 
     return { addTodo };
@@ -43,7 +44,7 @@ const RootStore = types
 const store = RootStore.create({
   users: {}, // Users não está marcado como opcional. Interessante!
   todos: {
-    "1": {
+    1: {
       id: id,
       name: "Eat a cake",
       done: true
@@ -51,26 +52,34 @@ const store = RootStore.create({
   }
 });
 
-const App = observer(props => (
-  <div>
-    <button onClick={e => props.store.addTodo(randomId(), "New Task")}>
-      Add Task
-    </button>
-    {values(props.store.todos).map(todo => (
-      <div key={todo.id}>
-        <input
-          type="checkbox"
-          checked={todo.done}
-          onChange={e => todo.toggle()}
-        />
-        <input
-          type="text"
-          value={todo.name}
-          onChange={e => todo.setName(e.currentTarget.value)}
-        />
-      </div>
-    ))}
-  </div>
-));
+const TodoView = observer(props => {
+  return (
+    <div>
+      <input
+        type="checkbox"
+        checked={props.todo.done}
+        onChange={e => props.todo.toggle()}
+      />
+      <input
+        type="text"
+        value={props.todo.name}
+        onChange={e => props.todo.setName(e.currentTarget.value)}
+      />
+    </div>
+  );
+});
 
-render(<App store={store} />, document.getElementById("root"));
+const AppView = observer(props => {
+  return (
+    <div>
+      <button onClick={e => props.store.addTodo(randomId(), "New Task")}>
+        Add Task
+      </button>
+      {values(props.store.todos).map((todo, i) => (
+        <TodoView key={i} todo={todo} />
+      ))}
+    </div>
+  );
+});
+
+render(<AppView store={store} />, document.getElementById("root"));
